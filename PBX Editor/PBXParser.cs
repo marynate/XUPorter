@@ -176,8 +176,12 @@ namespace UnityEditor.XCodeEditor
 
 	public class PBXParser
 	{
-		public const string PBX_HEADER_TOKEN = "// !$*UTF8*$!\n";
-		public const char WHITESPACE_SPACE = ' ';
+#if (UNITY_EDITOR_WIN)
+		public const string PBX_HEADER_TOKEN = "// !$*UTF8*$!\r\n";
+#else
+        public const string PBX_HEADER_TOKEN = "// !$*UTF8*$!\n";
+#endif
+        public const char WHITESPACE_SPACE = ' ';
 		public const char WHITESPACE_TAB = '\t';
 		public const char WHITESPACE_NEWLINE = '\n';
 		public const char WHITESPACE_CARRIAGE_RETURN = '\r';
@@ -203,7 +207,7 @@ namespace UnityEditor.XCodeEditor
 
 		public PBXDictionary Decode( string data )
 		{
-			if( !data.StartsWith( PBX_HEADER_TOKEN ) ) {
+            if( !data.StartsWith( PBX_HEADER_TOKEN ) ) {
 				Debug.Log( "Wrong file format." );
 				return null;
 			}

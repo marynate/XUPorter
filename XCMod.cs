@@ -80,6 +80,22 @@ namespace UnityEditor.XCodeEditor
 				return (ArrayList)_datastore["linker_flags"];
 			}
 		}
+
+        public ArrayList copy_libraries
+        {
+            get
+            {
+                return (ArrayList)_datastore["copy_libraries"];
+            }
+        }
+
+        public ArrayList copy_classes
+        {
+            get
+            {
+                return (ArrayList)_datastore["copy_classes"];
+            }
+        }
 		
 		public XCMod( string filename )
 		{	
