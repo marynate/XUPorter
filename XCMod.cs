@@ -81,19 +81,11 @@ namespace UnityEditor.XCodeEditor
 			}
 		}
 
-        public ArrayList copy_libraries
+        public ArrayList copy_folders
         {
             get
             {
-                return (ArrayList)_datastore["copy_libraries"];
-            }
-        }
-
-        public ArrayList copy_classes
-        {
-            get
-            {
-                return (ArrayList)_datastore["copy_classes"];
+                return (ArrayList)_datastore["copy_folders"];
             }
         }
 		

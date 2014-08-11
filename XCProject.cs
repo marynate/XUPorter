@@ -475,7 +475,7 @@ namespace UnityEditor.XCodeEditor
 			currentObject.Value.AddBuildFile( buildFile );
 		}
 		
-		public bool AddFolder( string folderPath, PBXGroup parent = null, string[] exclude = null, bool recursive = true, bool createBuildFile = true, bool copyFile = false, CopyTarget copyTarget=CopyTarget.Libraries )
+		public bool AddFolder( string folderPath, PBXGroup parent = null, string[] exclude = null, bool recursive = true, bool createBuildFile = true, bool copyFile = false, string targetRelFolder = "" )
 		{
 			Debug.Log("Folder PATH: "+folderPath);
 			if( !Directory.Exists( folderPath ) ){
@@ -533,9 +533,9 @@ namespace UnityEditor.XCodeEditor
 				
 			    if (copyFile)
 			    {
-			        string targetFolder = (copyTarget == CopyTarget.Libraries) ? unityLibriesFolder : unityClassesFolder;
-			        string targetFile = Path.Combine(targetFolder, Path.GetFileName(file));
-                    Debug.Log("Copying File: " + Path.GetFileName(file) + " to Folder: " + targetFolder + " As: " + targetFile);
+                    string targetAbsFolder = Path.Combine(this.projectRootPath, targetRelFolder);
+                    string targetFile = Path.Combine(targetAbsFolder, Path.GetFileName(file));
+                    Debug.Log(" - Copying File: " + Path.GetFileName(file) + " to Folder: " + targetAbsFolder + " As: " + targetFile);
 			        File.Copy(file, targetFile,true);
                     AddFile(targetFile, newGroup, "SOURCE_ROOT", createBuildFile);
 			    }
@@ -703,21 +703,19 @@ namespace UnityEditor.XCodeEditor
 				this.AddOtherLinkerFlags( flag );
 			}
 
-            Debug.Log("Copying Libraries...");
-            foreach (string folderPath in mod.copy_libraries)
-            {
-                string absoluteFolderPath = System.IO.Path.Combine(mod.path, folderPath);
-                Debug.Log("Copying Libraries from " + absoluteFolderPath);
-                this.AddFolder(absoluteFolderPath, modGroup, (string[])mod.excludes.ToArray(typeof(string)), true, true, true, CopyTarget.Libraries);
-            }
-
-            Debug.Log("Copying Classes...");
-            foreach (string folderPath in mod.copy_classes)
-            {
-                string absoluteFolderPath = System.IO.Path.Combine(mod.path, folderPath);
-                Debug.Log("Copying Classes from " + absoluteFolderPath);
-                this.AddFolder(absoluteFolderPath, modGroup, (string[])mod.excludes.ToArray(typeof(string)), true, true, true, CopyTarget.Classes);
-            }
+            Debug.Log("Copying folders...");
+		    var copyFolderCount = mod.copy_folders.Count;
+            if (copyFolderCount >= 2 && copyFolderCount%2==0)
+		    {
+		        for (int i = 0; i < copyFolderCount-1; i+=2)
+		        {
+                    var targetFolder = mod.copy_folders[i] as string;
+                    var folderPath = mod.copy_folders[i + 1] as string;
+                    string absoluteFolderPath = System.IO.Path.Combine(mod.path, folderPath);
+                    Debug.Log("Copying Folder from " + absoluteFolderPath + " to " + targetFolder);
+                    this.AddFolder(absoluteFolderPath, modGroup, (string[])mod.excludes.ToArray(typeof(string)), false, true, true, targetFolder);
+		        }
+		    }
 			
 			this.Consolidate();
 		}
