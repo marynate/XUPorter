@@ -516,7 +516,16 @@ namespace UnityEditor.XCodeEditor
 				
 				if( recursive ) {
 					Debug.Log( "recursive" );
-					AddFolder( directory, newGroup, exclude, recursive, createBuildFile );
+				    if (copyFile)
+				    {
+				        var recursiveTargetRelFolder = Path.Combine(targetRelFolder, directory.Substring(folderPath.Length));
+                        Debug.Log(" -> recursiveTargetRelFolder: " + recursiveTargetRelFolder);
+				        AddFolder(directory, newGroup, exclude, recursive, createBuildFile, copyFile, recursiveTargetRelFolder);
+				    }
+				    else
+				    {
+                        AddFolder(directory, newGroup, exclude, recursive, createBuildFile);    
+				    }
 				}
 			}
 			
@@ -713,7 +722,7 @@ namespace UnityEditor.XCodeEditor
                     var folderPath = mod.copy_folders[i + 1] as string;
                     string absoluteFolderPath = System.IO.Path.Combine(mod.path, folderPath);
                     Debug.Log("Copying Folder from " + absoluteFolderPath + " to " + targetFolder);
-                    this.AddFolder(absoluteFolderPath, modGroup, (string[])mod.excludes.ToArray(typeof(string)), false, true, true, targetFolder);
+                    this.AddFolder(absoluteFolderPath, modGroup, (string[])mod.excludes.ToArray(typeof(string)), true, true, true, targetFolder);
 		        }
 		    }
 			
